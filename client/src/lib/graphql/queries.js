@@ -12,10 +12,12 @@ const client = new GraphQLClient(url,{
   }
 });
 
-export async function getJobs() {
+export async function getJobs(limit,offset) {
   const query = gql`
-    query {
-      jobs {
+    query Jobs($limit:Int,$offset:Int){
+      jobs(limit:$limit,offset:$offset) {
+        totalCount,
+        jobs{
         id
         title
         company {
@@ -23,9 +25,10 @@ export async function getJobs() {
         }
         createdAt
       }
+      }
     }
   `;
-  const data = await client.request(query);
+  const data = await client.request(query,{limit,offset});
   return data.jobs;
 }
 export async function getJobById(id) {

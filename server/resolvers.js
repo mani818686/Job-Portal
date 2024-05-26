@@ -5,13 +5,18 @@ import {
   getJob,
   getJobs,
   getJobsByCompany,
+  getJobsCount,
   updateJob,
 } from "./db/jobs.js";
 import { GraphQLError } from "graphql";
 
 export const resolvers = {
   Query: {
-    jobs: () => getJobs(),
+    jobs: async (_root, { limit,offset }) => {
+      const jobs = await getJobs(limit,offset)
+      const totalCount = await getJobsCount()
+      return {jobs:jobs,totalCount:totalCount}
+    },
     company: async (_root, args) => {
       const data = await getCompany(args.id);
       console.log(data);
